@@ -8,9 +8,64 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="at.tomtasche.whistleapp.MainActivity" >
 
-    <TextView
+    <EditText
+        android:id="@+id/edit_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="type your message here..." >
+
+        <requestFocus />
+    </EditText>
+
+    <LinearLayout
+        android:id="@+id/layout_input_buttons"
+        style="?android:attr/buttonBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/edit_input"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/button_clear_input"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="clear" />
+
+        <Button
+            android:id="@+id/button_whistle"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="blow the whistle!" />
+    </LinearLayout>
+
+    <Space
+        android:id="@+id/space"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_alignStart="@+id/layout_input_buttons"
+        android:layout_below="@id/layout_input_buttons" />
+
+    <EditText
+        android:id="@+id/edit_output"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/space"
+        android:ems="10"
+        android:enabled="false"
+        android:hint="this is what the others say..." >
+    </EditText>
+
+    <Button
+        android:id="@+id/button_clear_output"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/edit_output"
+        android:text="clear" />
 
 </RelativeLayout>

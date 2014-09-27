@@ -1,6 +1,10 @@
 package at.tomtasche.whistleapp;
 
 public class WhistleProducer {
+	
+	public void queueMessage(String text) {
+		// TODO
+	}
 
 	public Whistle read() {
 		double time = 1;
