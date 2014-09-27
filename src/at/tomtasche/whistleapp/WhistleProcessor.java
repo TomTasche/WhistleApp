@@ -1,22 +1,89 @@
 package at.tomtasche.whistleapp;
 
-import java.util.Arrays;
-
 public class WhistleProcessor {
+
+	public static final double DEFAULT_FREQUENCY_DELTA = 100;
+
+	public static void dft(double[] in, int samplingRate, double[] out,
+			double lowerFrequency, double upperFrequency) {
+		double frequencyBand = upperFrequency - lowerFrequency;
+		double sampleTime = 1.0 / samplingRate;
+
+		for (int i = 0; i < out.length; i++) {
+			double frequency = lowerFrequency + frequencyBand
+					* ((double) i / out.length);
+
+			for (int k = 0; k < in.length; k++) {
+				double angle = 2 * Math.PI * frequency * sampleTime * k;
+				out[i] += in[k] * Math.cos(angle);
+			}
+		}
+	}
 
 	private Callback callback;
 
+	private final int samplingRate;
+	private final double frequency;
+	private final double frequencyDelta;
+	private final int baud;
+
+	private final short[] buffer;
+	private int bufferIndex;
+
 	public WhistleProcessor(int samplingRate, double frequency, int baud) {
+		this(samplingRate, frequency, baud, DEFAULT_FREQUENCY_DELTA);
+	}
+
+	public WhistleProcessor(int samplingRate, double frequency, int baud,
+			double frequencyDelta) {
+		this.samplingRate = samplingRate;
+		this.frequency = frequency;
+		this.baud = baud;
+		this.frequencyDelta = frequencyDelta;
+
+		double optimalTimeSlice = 1.0 / baud / 3;
+		buffer = new short[(int) Math.ceil(optimalTimeSlice * samplingRate)];
 	}
 
 	public void initialize(Callback callback) {
 		this.callback = callback;
 	}
 
-	public void process(short[] buffer, int length) {
-		System.out.println("beep: " + Arrays.toString(buffer));
+	public void process(short[] buf, int len) {
+		int index = 0;
 
-		callback.onProcessed("hi");
+		while (index < buf.length) {
+			int copyLength = Math.min(len, buffer.length - bufferIndex);
+			System.arraycopy(buf, 0, buffer, bufferIndex, copyLength);
+			index += copyLength;
+			bufferIndex += copyLength;
+
+			if (bufferIndex >= buffer.length) {
+				processBuffer();
+				bufferIndex = 0;
+			}
+		}
+	}
+
+	public void processBuffer() {
+		double[] data = new double[buffer.length];
+		for (int i = 0; i < data.length; i++) {
+			data[i] = (double) buffer[i] / Short.MAX_VALUE;
+		}
+
+		double lowerFrequency = frequency - frequencyDelta;
+		double upperFrequency = frequency + frequencyDelta;
+		double frequencyBand = upperFrequency - lowerFrequency;
+		double[] out = new double[100];
+		dft(data, samplingRate, out, lowerFrequency, upperFrequency);
+
+		double sum = 0;
+		for (int i = 0; i < out.length; i++) {
+			sum += out[i];
+		}
+
+		// TODO: LOG
+		callback.onProcessed("" + sum);
 	}
 
 	public interface Callback {
