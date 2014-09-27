@@ -2,7 +2,7 @@ package at.tomtasche.whistleapp;
 
 public class WhistleProcessor {
 
-	public static final double DEFAULT_FREQUENCY_DELTA = 100;
+	public static final int DEFAULT_FREQUENCY_DELTA = 100;
 
 	public static void dft(double[] in, int samplingRate, double[] out,
 			double lowerFrequency, double upperFrequency) {
@@ -20,26 +20,28 @@ public class WhistleProcessor {
 		}
 	}
 
-	private Callback callback;
+	private final Callback callback;
 
 	private final int samplingRate;
-	private final double frequency;
-	private final double frequencyDelta;
+	private final int frequency;
+	private final int frequencyDelta;
 	private final int baud;
-	private final double syncFrequency;
+	private final int syncFrequency;
 
 	private final short[] buffer;
 	private int bufferIndex;
-	
+
 	private int state = 0;
 
-	public WhistleProcessor(int samplingRate, double frequency, int baud,
-			double syncFrequency) {
-		this(samplingRate, frequency, baud, syncFrequency, DEFAULT_FREQUENCY_DELTA);
+	public WhistleProcessor(Callback callback, int samplingRate, int frequency,
+			int baud, int syncFrequency) {
+		this(callback, samplingRate, frequency, baud, syncFrequency,
+				DEFAULT_FREQUENCY_DELTA);
 	}
 
-	public WhistleProcessor(int samplingRate, double frequency, int baud,
-			double syncFrequency, double frequencyDelta) {
+	public WhistleProcessor(Callback callback, int samplingRate, int frequency,
+			int baud, int syncFrequency, int frequencyDelta) {
+		this.callback = callback;
 		this.samplingRate = samplingRate;
 		this.frequency = frequency;
 		this.baud = baud;
@@ -48,10 +50,6 @@ public class WhistleProcessor {
 
 		double optimalTimeSlice = 1.0 / baud / 3;
 		buffer = new short[(int) Math.ceil(optimalTimeSlice * samplingRate)];
-	}
-
-	public void initialize(Callback callback) {
-		this.callback = callback;
 	}
 
 	public void process(short[] buf, int len) {
@@ -80,7 +78,7 @@ public class WhistleProcessor {
 			break;
 		}
 	}
-	
+
 	public void processSync() {
 		double[] data = new double[buffer.length];
 		for (int i = 0; i < data.length; i++) {
@@ -100,9 +98,9 @@ public class WhistleProcessor {
 		// TODO: LOG
 		callback.onProcessed("" + sum);
 	}
-	
+
 	public void processData() {
-		
+
 	}
 
 	public interface Callback {
