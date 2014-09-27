@@ -34,7 +34,8 @@ public class MainActivity extends Activity implements OnClickListener, Callback 
 
 		mainHandler = new Handler();
 
-		whistleProcessor = new WhistlePrinter();
+		// TODO
+		whistleProcessor = new WhistleProcessor(0, 0, 0);
 		whistleProcessor.initialize(this);
 
 		whistleReceiver = new WhistleReceiver();

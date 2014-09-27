@@ -34,7 +34,6 @@ public class WhistleSender implements Runnable {
 
 		while (!stopped) {
 			Whistle whistle = producer.read();
-
 			audioTrack.write(whistle.buffer, 0, whistle.length);
 		}
 

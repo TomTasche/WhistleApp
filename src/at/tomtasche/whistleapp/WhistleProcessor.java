@@ -1,10 +1,23 @@
 package at.tomtasche.whistleapp;
 
-public interface WhistleProcessor {
+import java.util.Arrays;
 
-	public void initialize(Callback callback);
+public class WhistleProcessor {
 
-	public void process(short[] buffer, int length);
+	private Callback callback;
+
+	public WhistleProcessor(int samplingRate, double frequency, int baud) {
+	}
+
+	public void initialize(Callback callback) {
+		this.callback = callback;
+	}
+
+	public void process(short[] buffer, int length) {
+		System.out.println("beep: " + Arrays.toString(buffer));
+
+		callback.onProcessed("hi");
+	}
 
 	public interface Callback {
 
