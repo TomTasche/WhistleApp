@@ -44,7 +44,7 @@ public class WhistleReceiver implements Runnable {
 	}
 
 	public void cancelRecording() {
-		stopped = false;
+		stopped = true;
 
 		thread.interrupt();
 	}
