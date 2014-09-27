@@ -20,7 +20,7 @@ public class WhistleProcessor {
 		}
 	}
 
-	private Callback callback;
+	private final Callback callback;
 
 	private final int samplingRate;
 	private final double frequency;
@@ -30,12 +30,14 @@ public class WhistleProcessor {
 	private final short[] buffer;
 	private int bufferIndex;
 
-	public WhistleProcessor(int samplingRate, double frequency, int baud) {
-		this(samplingRate, frequency, baud, DEFAULT_FREQUENCY_DELTA);
+	public WhistleProcessor(Callback callback, int samplingRate,
+			double frequency, int baud) {
+		this(callback, samplingRate, frequency, baud, DEFAULT_FREQUENCY_DELTA);
 	}
 
-	public WhistleProcessor(int samplingRate, double frequency, int baud,
-			double frequencyDelta) {
+	public WhistleProcessor(Callback callback, int samplingRate,
+			double frequency, int baud, double frequencyDelta) {
+		this.callback = callback;
 		this.samplingRate = samplingRate;
 		this.frequency = frequency;
 		this.baud = baud;
@@ -43,10 +45,6 @@ public class WhistleProcessor {
 
 		double optimalTimeSlice = 1.0 / baud / 3;
 		buffer = new short[(int) Math.ceil(optimalTimeSlice * samplingRate)];
-	}
-
-	public void initialize(Callback callback) {
-		this.callback = callback;
 	}
 
 	public void process(short[] buf, int len) {
