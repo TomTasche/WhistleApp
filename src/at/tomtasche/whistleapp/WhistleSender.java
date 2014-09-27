@@ -34,7 +34,10 @@ public class WhistleSender implements Runnable {
 
 		while (!stopped) {
 			Whistle whistle = producer.read();
-			audioTrack.write(whistle.buffer, 0, whistle.length);
+			// only null if producer was interrupted
+			if (whistle != null) {
+				audioTrack.write(whistle.buffer, 0, whistle.length);
+			}
 		}
 
 		audioTrack.pause();
