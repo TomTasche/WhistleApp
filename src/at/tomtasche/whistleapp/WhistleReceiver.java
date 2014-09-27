@@ -13,7 +13,7 @@ public class WhistleReceiver implements Runnable {
 	private Thread thread;
 	private boolean stopped;
 
-	public void startRecording(WhistleProcessor processor) {
+	public void start(WhistleProcessor processor) {
 		this.processor = processor;
 
 		thread = new Thread(this);
@@ -43,7 +43,7 @@ public class WhistleReceiver implements Runnable {
 		recorder.release();
 	}
 
-	public void cancelRecording() {
+	public void stop() {
 		stopped = true;
 
 		thread.interrupt();

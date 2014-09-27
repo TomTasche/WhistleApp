@@ -10,6 +10,10 @@ import at.tomtasche.whistleapp.WhistleProcessor.Callback;
 
 public class MainActivity extends Activity implements OnClickListener, Callback {
 
+	private static final int BAUD = 10;
+	private static final int FREQUENCY = 10000;
+	private static final int SAMPLING_RATE = 44100;
+
 	private EditText outputEdit;
 	private EditText inputEdit;
 
@@ -34,15 +38,16 @@ public class MainActivity extends Activity implements OnClickListener, Callback 
 
 		mainHandler = new Handler();
 
-		whistleProcessor = new WhistleProcessor(this, 44100, 10000, 10);
+		whistleProcessor = new WhistleProcessor(this, SAMPLING_RATE, FREQUENCY,
+				BAUD);
 
 		whistleReceiver = new WhistleReceiver();
-		whistleReceiver.startRecording(whistleProcessor);
+		whistleReceiver.start(whistleProcessor);
 
-		whistleProducer = new WhistleProducer();
+		whistleProducer = new WhistleProducer(SAMPLING_RATE, FREQUENCY, BAUD);
 
 		whistleSender = new WhistleSender();
-		whistleSender.startPlaying(whistleProducer);
+		whistleSender.start(whistleProducer);
 	}
 
 	@Override
@@ -81,9 +86,9 @@ public class MainActivity extends Activity implements OnClickListener, Callback 
 	protected void onStop() {
 		super.onStop();
 
-		whistleReceiver.cancelRecording();
+		whistleReceiver.stop();
 
-		whistleSender.cancelPlaying();
+		whistleSender.stop();
 	}
 
 }

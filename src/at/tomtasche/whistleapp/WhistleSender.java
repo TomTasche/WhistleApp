@@ -14,7 +14,7 @@ public class WhistleSender implements Runnable {
 
 	private WhistleProducer producer;
 
-	public void startPlaying(WhistleProducer producer) {
+	public void start(WhistleProducer producer) {
 		this.producer = producer;
 
 		thread = new Thread(this);
@@ -33,7 +33,7 @@ public class WhistleSender implements Runnable {
 		audioTrack.play();
 
 		while (!stopped) {
-			Whistle whistle = producer.read();
+			Whistle whistle = producer.produce();
 			// only null if producer was interrupted
 			if (whistle != null) {
 				audioTrack.write(whistle.buffer, 0, whistle.length);
@@ -46,7 +46,7 @@ public class WhistleSender implements Runnable {
 		audioTrack.release();
 	}
 
-	public void cancelPlaying() {
+	public void stop() {
 		stopped = true;
 
 		thread.interrupt();

@@ -6,19 +6,23 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class WhistleProducer {
 
-	private static final double WHISTLE_LENGTH = 0.1;
-
-	private static final int WHISTLE_FREQUENCY = 10000;
 	private static final int EMPTY_FREQUENCY = 0;
-
-	private static final int WHISTLE_SAMPLE_RATE = 44100;
 
 	private LinkedBlockingQueue<String> messageQueue;
 
 	private BitSet currentMessageBits;
 	private int currentMessageBitsOffset;
 
-	public WhistleProducer() {
+	private int samplingRate;
+	private int frequency;
+	private double length;
+
+	public WhistleProducer(int samplingRate, int frequency, int baud) {
+		this.samplingRate = samplingRate;
+		this.frequency = frequency;
+
+		length = baud / 100.0;
+
 		messageQueue = new LinkedBlockingQueue<String>();
 	}
 
@@ -26,7 +30,15 @@ public class WhistleProducer {
 		messageQueue.add(text);
 	}
 
-	public Whistle read() {
+	public Whistle produce() {
+		if (currentMessageBits != null) {
+			boolean empty = isEmpty(currentMessageBits,
+					currentMessageBitsOffset);
+			if (empty) {
+				currentMessageBits = null;
+			}
+		}
+
 		if (currentMessageBits == null
 				|| currentMessageBitsOffset + 1 == currentMessageBits.size()) {
 			String currentMessage;
@@ -46,19 +58,17 @@ public class WhistleProducer {
 			currentMessageBitsOffset++;
 		}
 
-		int frequency;
+		int frq;
 		if (currentMessageBits.get(currentMessageBitsOffset)) {
-			frequency = WHISTLE_FREQUENCY;
+			frq = frequency;
 		} else {
-			frequency = EMPTY_FREQUENCY;
+			frq = EMPTY_FREQUENCY;
 		}
 
-		double angularVelocity = 2 * Math.PI * frequency;
-		short[] data = new short[(int) Math.ceil(WHISTLE_SAMPLE_RATE
-				* WHISTLE_LENGTH)];
-
+		double angularVelocity = 2 * Math.PI * frq;
+		short[] data = new short[(int) Math.ceil(samplingRate * length)];
 		for (int i = 0; i < data.length; i++) {
-			double t = (double) i / WHISTLE_SAMPLE_RATE;
+			double t = (double) i / samplingRate;
 			short amplitude = (short) (Short.MAX_VALUE * Math.sin(t
 					* angularVelocity));
 			data[i] = amplitude;
@@ -69,6 +79,11 @@ public class WhistleProducer {
 		whistle.length = data.length;
 
 		return whistle;
+	}
+
+	private static boolean isEmpty(BitSet bitSet, int offset) {
+		BitSet tempSet = bitSet.get(offset, bitSet.size());
+		return tempSet.isEmpty();
 	}
 
 	public static class Whistle {
