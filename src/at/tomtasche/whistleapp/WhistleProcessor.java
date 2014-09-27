@@ -26,19 +26,24 @@ public class WhistleProcessor {
 	private final double frequency;
 	private final double frequencyDelta;
 	private final int baud;
+	private final double syncFrequency;
 
 	private final short[] buffer;
 	private int bufferIndex;
+	
+	private int state = 0;
 
-	public WhistleProcessor(int samplingRate, double frequency, int baud) {
-		this(samplingRate, frequency, baud, DEFAULT_FREQUENCY_DELTA);
+	public WhistleProcessor(int samplingRate, double frequency, int baud,
+			double syncFrequency) {
+		this(samplingRate, frequency, baud, syncFrequency, DEFAULT_FREQUENCY_DELTA);
 	}
 
 	public WhistleProcessor(int samplingRate, double frequency, int baud,
-			double frequencyDelta) {
+			double syncFrequency, double frequencyDelta) {
 		this.samplingRate = samplingRate;
 		this.frequency = frequency;
 		this.baud = baud;
+		this.syncFrequency = syncFrequency;
 		this.frequencyDelta = frequencyDelta;
 
 		double optimalTimeSlice = 1.0 / baud / 3;
@@ -66,14 +71,24 @@ public class WhistleProcessor {
 	}
 
 	public void processBuffer() {
+		switch (state) {
+		case 0:
+			processSync();
+			break;
+		case 1:
+			processData();
+			break;
+		}
+	}
+	
+	public void processSync() {
 		double[] data = new double[buffer.length];
 		for (int i = 0; i < data.length; i++) {
 			data[i] = (double) buffer[i] / Short.MAX_VALUE;
 		}
 
-		double lowerFrequency = frequency - frequencyDelta;
-		double upperFrequency = frequency + frequencyDelta;
-		double frequencyBand = upperFrequency - lowerFrequency;
+		double lowerFrequency = syncFrequency - frequencyDelta;
+		double upperFrequency = syncFrequency + frequencyDelta;
 		double[] out = new double[100];
 		dft(data, samplingRate, out, lowerFrequency, upperFrequency);
 
@@ -84,6 +99,10 @@ public class WhistleProcessor {
 
 		// TODO: LOG
 		callback.onProcessed("" + sum);
+	}
+	
+	public void processData() {
+		
 	}
 
 	public interface Callback {
