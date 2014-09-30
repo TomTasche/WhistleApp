@@ -7,19 +7,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import static at.tomtasche.whistleapp.wave.WaveConstants.*;
+import static at.tomtasche.whistleapp.util.EndianUtil.*;
 
 // TODO: implement super level RIFF header
 // https://ccrma.stanford.edu/courses/422/projects/WaveFormat/
 public class WaveHeader {
-
-	private static short swapEndian(short s) {
-		return (short) (((s & 0x00ff) << 8) | ((s & 0xff00) >> 8));
-	}
-
-	private static int swapEndian(int i) {
-		return ((i & 0x000000ff) << 24) | ((i & 0x0000ff00) << 8)
-				| ((i & 0x00ff0000) >>> 8) | ((i & 0xff000000) >>> 24);
-	}
 
 	public static WaveHeader read(byte[] in) {
 		return read(in, 0);
@@ -77,21 +70,13 @@ public class WaveHeader {
 		if (!defaults)
 			return;
 
-		this.chunkId = WaveConstants.CHUNK_ID;
-		this.format = WaveConstants.FORMAT;
-		this.subchunk1Id = WaveConstants.SUBCHUNK_1_ID;
-		this.subchunk1Size = WaveConstants.SUBCHUNK_1_SIZE;
-		this.subchunk2Id = WaveConstants.SUBCHUNK_2_ID;
+		defaults();
 	}
 
 	public WaveHeader(short numChannels, int sampleRate, short bitsPerSample) {
 		this(true);
 
-		this.numChannels = numChannels;
-		this.sampleRate = sampleRate;
-		this.byteRate = sampleRate * numChannels * bitsPerSample / 8;
-		this.blockAlign = (short) (numChannels * bitsPerSample / 8);
-		this.bitsPerSample = bitsPerSample;
+		fill(numChannels, sampleRate, bitsPerSample);
 	}
 
 	public int getChunkId() {
@@ -198,10 +183,31 @@ public class WaveHeader {
 		this.subchunk2Size = (int) (0xffffffff & subchunk2Size);
 	}
 
+	public void defaults() {
+		this.chunkId = CHUNK_ID;
+		this.format = FORMAT;
+		this.subchunk1Id = SUBCHUNK_1_ID;
+		this.subchunk1Size = SUBCHUNK_1_SIZE;
+		this.audioFormat = AUDIO_FORMAT;
+		this.subchunk2Id = SUBCHUNK_2_ID;
+	}
+
+	public void fill(short numChannels, int sampleRate, short bitsPerSample) {
+		this.numChannels = numChannels;
+		this.sampleRate = sampleRate;
+		this.byteRate = sampleRate * numChannels * bitsPerSample / 8;
+		this.blockAlign = (short) (numChannels * bitsPerSample / 8);
+		this.bitsPerSample = bitsPerSample;
+	}
+
+	public void fillSize(int subchunk2Size) {
+		this.chunkSize = 4 + (8 + subchunk1Size) + (8 + subchunk2Size);
+		this.subchunk2Size = subchunk2Size;
+	}
+
 	public byte[] write() {
 		try {
-			ByteArrayOutputStream out = new ByteArrayOutputStream(
-					WaveConstants.HEADER_SIZE);
+			ByteArrayOutputStream out = new ByteArrayOutputStream(HEADER_SIZE);
 			write(out);
 			return out.toByteArray();
 		} catch (IOException e) {
