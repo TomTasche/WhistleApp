@@ -6,20 +6,23 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class WhistleProducer {
 
-	private static final int EMPTY_FREQUENCY = 0;
-
 	private LinkedBlockingQueue<String> messageQueue;
 
 	private BitSet currentMessageBits;
 	private int currentMessageBitsOffset;
 
-	private int samplingRate;
-	private int frequency;
-	private double length;
+	private final int samplingRate;
+	private final int frequency;
+	private final int syncFrequency;
+	private final double syncTime;
+	private final double length;
 
-	public WhistleProducer(int samplingRate, int frequency, int baud) {
+	public WhistleProducer(int samplingRate, int frequency, int baud,
+			int syncFrequency, double syncTime) {
 		this.samplingRate = samplingRate;
 		this.frequency = frequency;
+		this.syncFrequency = syncFrequency;
+		this.syncTime = syncTime;
 
 		length = baud / 100.0;
 
@@ -40,7 +43,7 @@ public class WhistleProducer {
 		}
 
 		if (currentMessageBits == null
-				|| currentMessageBitsOffset + 1 == currentMessageBits.size()) {
+				|| currentMessageBitsOffset >= currentMessageBits.size()) {
 			String currentMessage;
 			try {
 				currentMessage = messageQueue.take();
@@ -54,24 +57,39 @@ public class WhistleProducer {
 					.forName("ASCII"));
 			currentMessageBits = BitSet.valueOf(currentMessageBytes);
 			currentMessageBitsOffset = 0;
+
+			// send sync
+			double angularVelocity = 2 * Math.PI * syncFrequency;
+			short[] data = new short[(int) Math.ceil(samplingRate * syncTime)];
+			for (int i = 0; i < data.length; i++) {
+				double t = (double) i / samplingRate;
+				short value = (short) (Short.MAX_VALUE * Math.sin(t
+						* angularVelocity));
+				data[i] = value;
+			}
+
+			Whistle whistle = new Whistle();
+			whistle.buffer = data;
+			whistle.length = data.length;
+
+			return whistle;
 		} else {
 			currentMessageBitsOffset++;
 		}
 
-		int frq;
+		int amplitude;
 		if (currentMessageBits.get(currentMessageBitsOffset)) {
-			frq = frequency;
+			amplitude = Short.MAX_VALUE;
 		} else {
-			frq = EMPTY_FREQUENCY;
+			amplitude = 0;
 		}
 
-		double angularVelocity = 2 * Math.PI * frq;
+		double angularVelocity = 2 * Math.PI * frequency;
 		short[] data = new short[(int) Math.ceil(samplingRate * length)];
 		for (int i = 0; i < data.length; i++) {
 			double t = (double) i / samplingRate;
-			short amplitude = (short) (Short.MAX_VALUE * Math.sin(t
-					* angularVelocity));
-			data[i] = amplitude;
+			short value = (short) (amplitude * Math.sin(t * angularVelocity));
+			data[i] = value;
 		}
 
 		Whistle whistle = new Whistle();

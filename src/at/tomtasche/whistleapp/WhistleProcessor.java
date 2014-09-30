@@ -1,6 +1,12 @@
 package at.tomtasche.whistleapp;
 
+import android.util.Log;
+
 public class WhistleProcessor {
+
+	public static interface Callback {
+		public void onProcessed(String text);
+	}
 
 	public static final int DEFAULT_FREQUENCY_DELTA = 100;
 
@@ -48,8 +54,8 @@ public class WhistleProcessor {
 		this.syncFrequency = syncFrequency;
 		this.frequencyDelta = frequencyDelta;
 
-		double optimalTimeSlice = 1.0 / baud / 3;
-		buffer = new short[(int) Math.ceil(optimalTimeSlice * samplingRate)];
+		double bufferTime = 1.0 / frequency * 20;
+		buffer = new short[(int) Math.ceil(bufferTime * samplingRate)];
 	}
 
 	public void process(short[] buf, int len) {
@@ -90,21 +96,21 @@ public class WhistleProcessor {
 		double[] out = new double[100];
 		dft(data, samplingRate, out, lowerFrequency, upperFrequency);
 
-		double sum = 0;
+		double avg = 0;
 		for (int i = 0; i < out.length; i++) {
-			sum += out[i];
+			avg += out[i];
 		}
+		avg /= out.length;
 
 		// TODO: LOG
-		callback.onProcessed("" + sum);
+		callback.onProcessed("" + avg);
+		if (avg > 0.1) {
+			Log.d("WhistleProcessor", "" + avg);
+		}
 	}
 
 	public void processData() {
 
 	}
 
-	public interface Callback {
-
-		public void onProcessed(String text);
-	}
 }
