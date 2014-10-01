@@ -70,13 +70,29 @@ public class WaveHeader {
 		if (!defaults)
 			return;
 
-		defaults();
+		fillDefaults();
 	}
 
 	public WaveHeader(short numChannels, int sampleRate, short bitsPerSample) {
 		this(true);
 
-		fill(numChannels, sampleRate, bitsPerSample);
+		fillHeader(numChannels, sampleRate, bitsPerSample);
+	}
+
+	public WaveHeader(WaveHeader header) {
+		this.chunkId = header.chunkId;
+		this.chunkSize = header.chunkSize;
+		this.format = header.format;
+		this.subchunk1Id = header.subchunk1Id;
+		this.subchunk1Size = header.subchunk1Size;
+		this.audioFormat = header.audioFormat;
+		this.numChannels = header.numChannels;
+		this.sampleRate = header.sampleRate;
+		this.byteRate = header.byteRate;
+		this.blockAlign = header.blockAlign;
+		this.bitsPerSample = header.bitsPerSample;
+		this.subchunk2Id = header.subchunk2Id;
+		this.subchunk2Size = header.subchunk2Size;
 	}
 
 	public int getChunkId() {
@@ -183,7 +199,7 @@ public class WaveHeader {
 		this.subchunk2Size = (int) (0xffffffff & subchunk2Size);
 	}
 
-	public void defaults() {
+	public void fillDefaults() {
 		this.chunkId = CHUNK_ID;
 		this.format = FORMAT;
 		this.subchunk1Id = SUBCHUNK_1_ID;
@@ -192,7 +208,8 @@ public class WaveHeader {
 		this.subchunk2Id = SUBCHUNK_2_ID;
 	}
 
-	public void fill(short numChannels, int sampleRate, short bitsPerSample) {
+	public void fillHeader(short numChannels, int sampleRate,
+			short bitsPerSample) {
 		this.numChannels = numChannels;
 		this.sampleRate = sampleRate;
 		this.byteRate = sampleRate * numChannels * bitsPerSample / 8;
