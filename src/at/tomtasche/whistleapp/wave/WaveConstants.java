@@ -1,5 +1,7 @@
 package at.tomtasche.whistleapp.wave;
 
+import java.nio.ByteOrder;
+
 public class WaveConstants {
 
 	public static final int CHUNK_ID = 0x52494646; // "RIFF"
@@ -9,6 +11,7 @@ public class WaveConstants {
 	public static final short AUDIO_FORMAT = 1;
 	public static final int SUBCHUNK_2_ID = 0x64617461; // "data"
 	public static final int HEADER_SIZE = 44;
+	public static final ByteOrder DATA_ENDIAN = ByteOrder.LITTLE_ENDIAN;
 
 	private WaveConstants() {
 	}

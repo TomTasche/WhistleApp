@@ -2,6 +2,7 @@ package at.tomtasche.whistleapp.wave;
 
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
 import at.tomtasche.whistleapp.util.CountingOutputStream;
@@ -18,7 +19,7 @@ public class WaveTest {
 
 		File f = new File("test.wav");
 		RandomAccessFile raf = new RandomAccessFile(f, "rw");
-		RandomAccessFileOutputStream out = new RandomAccessFileOutputStream(raf);
+		OutputStream out = new RandomAccessFileOutputStream(raf);
 		CountingOutputStream cout = new CountingOutputStream(out);
 		DataOutputStream dout = new DataOutputStream(cout);
 
