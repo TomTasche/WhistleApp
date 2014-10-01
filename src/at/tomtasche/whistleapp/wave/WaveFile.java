@@ -33,12 +33,12 @@ public class WaveFile {
 		raf.close();
 	}
 
-	public PCMWriter getAppendWriter() throws IOException {
+	public PCMOutputStreamWriter getAppendWriter() throws IOException {
 		RandomAccessFile raf = new RandomAccessFile(file, "rw");
 		InputStream in = new RandomAccessFileInputStream(raf);
 		WaveHeader header = WaveHeader.read(in);
 		OutputStream out = new RandomAccessFileOutputStream(raf);
-		return new PCMWriter(out, header.getBitsPerSample(),
+		return new PCMOutputStreamWriter(out, header.getBitsPerSample(),
 				WaveConstants.DATA_ENDIAN);
 	}
 

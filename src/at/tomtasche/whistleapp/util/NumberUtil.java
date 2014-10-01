@@ -2,6 +2,7 @@ package at.tomtasche.whistleapp.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 
 public class NumberUtil {
 
@@ -22,6 +23,14 @@ public class NumberUtil {
 				.multiply(new BigDecimal(maxPositive)).toBigInteger();
 		byte[] bytes = value.toByteArray();
 		System.arraycopy(bytes, 0, b, off, Math.min(bytes.length, len));
+	}
+
+	public static double mapInteger(byte[] b) {
+		BigInteger maxPositive = BigInteger.ZERO.setBit(b.length << 2)
+				.subtract(BigInteger.ONE);
+		BigInteger value = new BigInteger(b);
+		return new BigDecimal(value).divide(new BigDecimal(maxPositive),
+				MathContext.DECIMAL64).doubleValue();
 	}
 
 	private NumberUtil() {
