@@ -4,7 +4,7 @@ import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
 
-public abstract class PCMWriter implements Closeable, Flushable {
+public abstract class PcmWriter implements Closeable, Flushable {
 
 	public abstract void write(double pulse) throws IOException;
 

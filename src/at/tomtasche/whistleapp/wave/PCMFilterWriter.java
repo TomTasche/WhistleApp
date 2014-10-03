@@ -2,12 +2,12 @@ package at.tomtasche.whistleapp.wave;
 
 import java.io.IOException;
 
-public class PCMFilterWriter extends PCMWriter {
+public class PcmFilterWriter extends PcmWriter {
 
-	private final PCMWriter out;
-	private final PCMFilter filter;
+	private final PcmWriter out;
+	private final PcmFilter filter;
 
-	public PCMFilterWriter(PCMWriter out, PCMFilter filter) {
+	public PcmFilterWriter(PcmWriter out, PcmFilter filter) {
 		this.out = out;
 		this.filter = filter;
 	}

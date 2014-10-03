@@ -2,12 +2,12 @@ package at.tomtasche.whistleapp.wave;
 
 import java.io.IOException;
 
-public class PCMFilterReader extends PCMReader {
+public class PcmFilterReader extends PcmReader {
 
-	private final PCMReader in;
-	private final PCMFilter filter;
+	private final PcmReader in;
+	private final PcmFilter filter;
 
-	public PCMFilterReader(PCMReader in, PCMFilter filter) {
+	public PcmFilterReader(PcmReader in, PcmFilter filter) {
 		this.in = in;
 		this.filter = filter;
 	}

@@ -1,6 +1,6 @@
 package at.tomtasche.whistleapp.wave;
 
-import java.nio.ByteOrder;
+import at.stefl.commons.io.Endianness;
 
 public class WaveConstants {
 
@@ -11,7 +11,7 @@ public class WaveConstants {
 	public static final short AUDIO_FORMAT = 1;
 	public static final int SUBCHUNK_2_ID = 0x64617461; // "data"
 	public static final int HEADER_SIZE = 44;
-	public static final ByteOrder DATA_ENDIAN = ByteOrder.LITTLE_ENDIAN;
+	public static final Endianness DATA_ENDIAN = Endianness.LITTLE;
 
 	private WaveConstants() {
 	}

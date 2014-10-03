@@ -1,5 +1,13 @@
 package at.tomtasche.whistleapp.wave;
 
+import static at.tomtasche.whistleapp.wave.WaveConstants.AUDIO_FORMAT;
+import static at.tomtasche.whistleapp.wave.WaveConstants.CHUNK_ID;
+import static at.tomtasche.whistleapp.wave.WaveConstants.FORMAT;
+import static at.tomtasche.whistleapp.wave.WaveConstants.HEADER_SIZE;
+import static at.tomtasche.whistleapp.wave.WaveConstants.SUBCHUNK_1_ID;
+import static at.tomtasche.whistleapp.wave.WaveConstants.SUBCHUNK_1_SIZE;
+import static at.tomtasche.whistleapp.wave.WaveConstants.SUBCHUNK_2_ID;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -7,8 +15,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import static at.tomtasche.whistleapp.wave.WaveConstants.*;
-import static at.tomtasche.whistleapp.util.EndianUtil.*;
+
+import at.stefl.commons.io.Endianness;
 
 // TODO: implement super level RIFF header
 // https://ccrma.stanford.edu/courses/422/projects/WaveFormat/
@@ -31,18 +39,18 @@ public class WaveHeader {
 
 		DataInputStream din = new DataInputStream(in);
 		result.chunkId = din.readInt();
-		result.chunkSize = swapEndian(din.readInt());
+		result.chunkSize = Endianness.swap(din.readInt());
 		result.format = din.readInt();
 		result.subchunk1Id = din.readInt();
-		result.subchunk1Size = swapEndian(din.readInt());
-		result.audioFormat = swapEndian(din.readShort());
-		result.numChannels = swapEndian(din.readShort());
-		result.sampleRate = swapEndian(din.readInt());
-		result.byteRate = swapEndian(din.readInt());
-		result.blockAlign = swapEndian(din.readShort());
-		result.bitsPerSample = swapEndian(din.readShort());
+		result.subchunk1Size = Endianness.swap(din.readInt());
+		result.audioFormat = Endianness.swap(din.readShort());
+		result.numChannels = Endianness.swap(din.readShort());
+		result.sampleRate = Endianness.swap(din.readInt());
+		result.byteRate = Endianness.swap(din.readInt());
+		result.blockAlign = Endianness.swap(din.readShort());
+		result.bitsPerSample = Endianness.swap(din.readShort());
 		result.subchunk2Id = din.readInt();
-		result.subchunk2Size = swapEndian(din.readInt());
+		result.subchunk2Size = Endianness.swap(din.readInt());
 
 		return result;
 	}
@@ -235,18 +243,18 @@ public class WaveHeader {
 	public void write(OutputStream out) throws IOException {
 		DataOutputStream dout = new DataOutputStream(out);
 		dout.writeInt(chunkId);
-		dout.writeInt(swapEndian(chunkSize));
+		dout.writeInt(Endianness.swap(chunkSize));
 		dout.writeInt(format);
 		dout.writeInt(subchunk1Id);
-		dout.writeInt(swapEndian(subchunk1Size));
-		dout.writeShort(swapEndian(audioFormat));
-		dout.writeShort(swapEndian(numChannels));
-		dout.writeInt(swapEndian(sampleRate));
-		dout.writeInt(swapEndian(byteRate));
-		dout.writeShort(swapEndian(blockAlign));
-		dout.writeShort(swapEndian(bitsPerSample));
+		dout.writeInt(Endianness.swap(subchunk1Size));
+		dout.writeShort(Endianness.swap(audioFormat));
+		dout.writeShort(Endianness.swap(numChannels));
+		dout.writeInt(Endianness.swap(sampleRate));
+		dout.writeInt(Endianness.swap(byteRate));
+		dout.writeShort(Endianness.swap(blockAlign));
+		dout.writeShort(Endianness.swap(bitsPerSample));
 		dout.writeInt(subchunk2Id);
-		dout.writeInt(swapEndian(subchunk2Size));
+		dout.writeInt(Endianness.swap(subchunk2Size));
 	}
 
 }

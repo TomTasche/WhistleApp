@@ -2,19 +2,19 @@ package at.tomtasche.whistleapp.wave;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.ByteOrder;
 
-import at.tomtasche.whistleapp.util.ArrayUtil;
-import at.tomtasche.whistleapp.util.NumberUtil;
+import at.stefl.commons.io.Endianness;
+import at.stefl.commons.util.NumberUtil;
+import at.stefl.commons.util.array.ArrayUtil;
 
-public class PCMOutputStreamWriter extends PCMWriter {
+public class PcmOutputStreamWriter extends PcmWriter {
 
 	private final OutputStream out;
 	private final byte[] buffer;
-	private final ByteOrder endian;
+	private final Endianness endian;
 
-	public PCMOutputStreamWriter(OutputStream out, int bitsPerSample,
-			ByteOrder endian) {
+	public PcmOutputStreamWriter(OutputStream out, int bitsPerSample,
+			Endianness endian) {
 		if (!NumberUtil.isPowerOf2(bitsPerSample))
 			throw new IllegalArgumentException();
 
@@ -24,9 +24,9 @@ public class PCMOutputStreamWriter extends PCMWriter {
 	}
 
 	public void write(double pulse) throws IOException {
-		NumberUtil.mapDouble(pulse, buffer, 0, buffer.length);
+		NumberUtil.mapDoubleToInteger(pulse, buffer, 0, buffer.length);
 
-		if (endian == ByteOrder.LITTLE_ENDIAN) {
+		if (endian == Endianness.LITTLE) {
 			ArrayUtil.swapAll(buffer);
 		}
 

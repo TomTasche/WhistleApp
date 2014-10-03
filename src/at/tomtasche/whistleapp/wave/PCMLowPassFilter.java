@@ -1,13 +1,13 @@
 package at.tomtasche.whistleapp.wave;
 
-public class PCMLowPassFilter extends PCMFilter {
+public class PcmLowPassFilter extends PcmFilter {
 
 	private final double a;
 	private final double b;
 
 	private double lastOut = Double.NaN;
 
-	public PCMLowPassFilter(int sampleRate, double cutoffFrequency) {
+	public PcmLowPassFilter(int sampleRate, double cutoffFrequency) {
 		double rc = 1 / (2 * Math.PI * cutoffFrequency);
 		double sampleTime = 1.0 / sampleRate;
 		this.a = sampleTime / (rc + sampleTime);
