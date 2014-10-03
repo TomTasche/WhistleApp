@@ -3,6 +3,8 @@ package at.tomtasche.whistleapp;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder.AudioSource;
+import android.util.Log;
+import at.tomtasche.whistleapp.wave.PcmAudioRecordReader;
 
 public class WhistleReceiver implements Runnable {
 
@@ -38,15 +40,13 @@ public class WhistleReceiver implements Runnable {
 				AudioFormat.ENCODING_PCM_16BIT, minBufferSize * 10);
 		recorder.startRecording();
 
-		short[] buffer = new short[256];
-		while (!stopped) {
-			int shortsRead = recorder.read(buffer, 0, buffer.length);
+		PcmAudioRecordReader in = new PcmAudioRecordReader(recorder);
 
-			processor.process(buffer, shortsRead);
-		}
+		while (true)
+			Log.d("pcm", "" + in.read());
 
-		recorder.stop();
-		recorder.release();
+//		recorder.stop();
+//		recorder.release();
 	}
 
 	public void stop() {

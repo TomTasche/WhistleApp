@@ -53,13 +53,13 @@ public class MainActivity extends Activity implements OnClickListener, Callback 
 		whistleSender = new WhistleSender();
 		whistleSender.start(whistleProducer);
 
-		FrequencyView view = new FrequencyView(this);
-		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-				RelativeLayout.LayoutParams.FILL_PARENT,
-				RelativeLayout.LayoutParams.MATCH_PARENT);
-		params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		((RelativeLayout) findViewById(R.id.edit_input).getRootView()).addView(
-				view, params); // LOL HACK!
+//		FrequencyView view = new FrequencyView(this);
+//		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+//				RelativeLayout.LayoutParams.FILL_PARENT,
+//				RelativeLayout.LayoutParams.MATCH_PARENT);
+//		params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+//		((RelativeLayout) findViewById(R.id.edit_input).getRootView()).addView(
+//				view, params); // LOL HACK!
 	}
 
 	@Override
