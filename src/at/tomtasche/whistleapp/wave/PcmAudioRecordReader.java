@@ -1,7 +1,5 @@
 package at.tomtasche.whistleapp.wave;
 
-import java.io.IOException;
-
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import at.stefl.commons.util.InaccessibleSectionException;
@@ -30,26 +28,29 @@ public class PcmAudioRecordReader extends PcmReader {
 		default:
 			throw new InaccessibleSectionException();
 		}
-		
+
 		this.recorder = recorder;
-		int inBufferSize = sampleSize * BUFFER_SIZE;
-		this.inBuffer = new byte[inBufferSize];
+		this.inBuffer = new byte[BUFFER_SIZE * sampleSize];
 		this.outBuffer = new double[BUFFER_SIZE];
 		this.outBufferIndex = outBuffer.length;
 	}
-	
+
 	private void readBuffer() {
-		outBufferSize = recorder.read(inBuffer, 0, inBuffer.length) / sampleSize;
-		byte[] tmp = ArrayUtil.copyOf(inBuffer, outBufferSize);
-		
-		for (int i = 0; i < outBufferSize; i += sampleSize) {
+		outBufferSize = recorder.read(inBuffer, 0, inBuffer.length)
+				/ sampleSize;
+		outBufferIndex = 0;
+
+		for (int i = 0, j = 0; i < outBufferSize; i++, j += sampleSize) {
+			byte[] tmp = ArrayUtil.copyOfRange(inBuffer, j, j + sampleSize);
 			outBuffer[i] = NumberUtil.mapIntegerToDouble(tmp);
 		}
 	}
 
 	@Override
-	public double read() throws IOException {
-		return 0;
+	public double read() {
+		while (outBufferIndex >= outBuffer.length)
+			readBuffer();
+		return outBuffer[outBufferIndex++];
 	}
 
 }
