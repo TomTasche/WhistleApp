@@ -8,10 +8,16 @@ public class WhistleReceiver implements Runnable {
 
 	private static final int SAMPLE_RATE_IN_HZ = 8000;
 
+	private final int sampleRate;
+
 	private WhistleProcessor processor;
 
 	private Thread thread;
 	private boolean stopped;
+
+	public WhistleReceiver(int sampleRate) {
+		this.sampleRate = sampleRate;
+	}
 
 	public void start(WhistleProcessor processor) {
 		this.processor = processor;
@@ -24,7 +30,7 @@ public class WhistleReceiver implements Runnable {
 	// http://stackoverflow.com/questions/4525206/android-audiorecord-class-process-live-mic-audio-quickly-set-up-callback-func
 	@Override
 	public void run() {
-		int minBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE_IN_HZ,
+		int minBufferSize = AudioRecord.getMinBufferSize(sampleRate,
 				AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
 
 		AudioRecord recorder = new AudioRecord(AudioSource.MIC,

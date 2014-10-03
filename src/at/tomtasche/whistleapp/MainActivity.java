@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import at.tomtasche.whistleapp.WhistleProcessor.Callback;
 
 public class MainActivity extends Activity implements OnClickListener, Callback {
@@ -43,7 +44,7 @@ public class MainActivity extends Activity implements OnClickListener, Callback 
 		whistleProcessor = new WhistleProcessor(this, SAMPLING_RATE,
 				DATA_FREQUENCY, BAUD, SYNC_FREQUENCY);
 
-		whistleReceiver = new WhistleReceiver();
+		whistleReceiver = new WhistleReceiver(SAMPLING_RATE);
 		whistleReceiver.start(whistleProcessor);
 
 		whistleProducer = new WhistleProducer(SAMPLING_RATE, DATA_FREQUENCY,
@@ -51,6 +52,14 @@ public class MainActivity extends Activity implements OnClickListener, Callback 
 
 		whistleSender = new WhistleSender();
 		whistleSender.start(whistleProducer);
+
+		FrequencyView view = new FrequencyView(this);
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+				RelativeLayout.LayoutParams.FILL_PARENT,
+				RelativeLayout.LayoutParams.MATCH_PARENT);
+		params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		((RelativeLayout) findViewById(R.id.edit_input).getRootView()).addView(
+				view, params); // LOL HACK!
 	}
 
 	@Override

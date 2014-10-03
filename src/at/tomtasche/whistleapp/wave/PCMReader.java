@@ -7,4 +7,8 @@ public abstract class PcmReader implements Closeable {
 
 	public abstract double read() throws IOException;
 
+	@Override
+	public void close() throws IOException {
+	}
+
 }
