@@ -23,8 +23,8 @@
         style="?android:attr/buttonBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/edit_input"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/edit_input"
         android:orientation="horizontal" >
 
         <Button
@@ -46,7 +46,7 @@
         android:id="@+id/space"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_alignStart="@+id/layout_input_buttons"
+        android:layout_alignLeft="@id/layout_input_buttons"
         android:layout_below="@id/layout_input_buttons" />
 
     <EditText
@@ -64,8 +64,39 @@
         style="?android:attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/edit_output"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/edit_output"
         android:text="clear" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/button_clear_output" >
+
+        <com.androidplot.xy.XYPlot
+            android:id="@+id/frequencyPlot"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            androidPlot.domainLabel="frequency"
+            androidPlot.domainLabelWidget.labelPaint.textSize="13dp"
+            androidPlot.graphWidget.domainLabelPaint.textSize="15dp"
+            androidPlot.graphWidget.domainOriginLabelPaint.textSize="15dp"
+            androidPlot.graphWidget.gridLinePaint.color="#000000"
+            androidPlot.graphWidget.marginBottom="25dp"
+            androidPlot.graphWidget.marginLeft="15dp"
+            androidPlot.graphWidget.marginRight="10dp"
+            androidPlot.graphWidget.marginTop="20dp"
+            androidPlot.graphWidget.rangeLabelPaint.textSize="15dp"
+            androidPlot.graphWidget.rangeOriginLabelPaint.textSize="15dp"
+            androidPlot.legendWidget.heightMetric.value="25dp"
+            androidPlot.legendWidget.iconSizeMetrics.heightMetric.value="15dp"
+            androidPlot.legendWidget.iconSizeMetrics.widthMetric.value="15dp"
+            androidPlot.legendWidget.positionMetrics.anchor="right_bottom"
+            androidPlot.legendWidget.textPaint.textSize="20dp"
+            androidPlot.rangeLabel="amplitude"
+            androidPlot.rangeLabelWidget.labelPaint.textSize="13dp"
+            androidPlot.titleWidget.labelPaint.textSize="20dp" />
+    </LinearLayout>
 
 </RelativeLayout>

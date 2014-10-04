@@ -1,17 +1,23 @@
 package at.tomtasche.whistleapp;
 
+import java.io.File;
 import java.io.IOException;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder.AudioSource;
+import android.os.Environment;
 import at.tomtasche.whistleapp.wave.PcmAudioRecordReader;
 import at.tomtasche.whistleapp.wave.PcmDftFilter;
 import at.tomtasche.whistleapp.wave.PcmFilterReader;
+import at.tomtasche.whistleapp.wave.PcmWriter;
+import at.tomtasche.whistleapp.wave.WaveFile;
+import at.tomtasche.whistleapp.wave.WaveHeader;
 
 public class WhistleReceiver implements Runnable {
 
-	private static final int SAMPLE_RATE_IN_HZ = 8000;
+	private static final int ENCODING = AudioFormat.ENCODING_PCM_16BIT;
+	private static final int CHANNEL = AudioFormat.CHANNEL_IN_MONO;
 
 	private final int sampleRate;
 
@@ -37,12 +43,11 @@ public class WhistleReceiver implements Runnable {
 	// http://stackoverflow.com/questions/4525206/android-audiorecord-class-process-live-mic-audio-quickly-set-up-callback-func
 	@Override
 	public void run() {
-		int minBufferSize = AudioRecord.getMinBufferSize(sampleRate,
-				AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+		int minBufferSize = AudioRecord.getMinBufferSize(sampleRate, CHANNEL,
+				ENCODING);
 
-		AudioRecord recorder = new AudioRecord(AudioSource.MIC,
-				SAMPLE_RATE_IN_HZ, AudioFormat.CHANNEL_IN_MONO,
-				AudioFormat.ENCODING_PCM_16BIT, minBufferSize * 10);
+		AudioRecord recorder = new AudioRecord(AudioSource.MIC, sampleRate,
+				CHANNEL, ENCODING, minBufferSize * 10);
 		recorder.startRecording();
 
 		PcmAudioRecordReader in = new PcmAudioRecordReader(recorder);
@@ -51,9 +56,24 @@ public class WhistleReceiver implements Runnable {
 		PcmFilterReader fin = new PcmFilterReader(in, dft);
 
 		try {
-			while (true)
-				fin.read();
+			File file = new File(Environment.getExternalStorageDirectory(),
+					"test.wav");
+			WaveFile waveFile = new WaveFile(file);
+
+			waveFile.writeHeader(new WaveHeader((short) 1, sampleRate,
+					(short) 16));
+
+			PcmWriter writer = waveFile.getAppendWriter();
+			while (!stopped) {
+				double read = fin.read();
+				writer.write(read);
+			}
+
+			writer.flush();
+			writer.close();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
 			recorder.stop();
 			recorder.release();
 		}
