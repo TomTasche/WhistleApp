@@ -1,13 +1,22 @@
 package at.tomtasche.whistleapp;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import at.tomtasche.whistleapp.WhistleProcessor.Callback;
+
+import com.androidplot.xy.BoundaryMode;
+import com.androidplot.xy.LineAndPointFormatter;
+import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.XYPlot;
 
 public class MainActivity extends Activity implements OnClickListener, Callback {
 
@@ -20,7 +29,14 @@ public class MainActivity extends Activity implements OnClickListener, Callback 
 	private EditText outputEdit;
 	private EditText inputEdit;
 
+	private XYPlot plot;
+	private LineAndPointFormatter seriesFormat;
+
+	private boolean stop;
+
 	private Handler mainHandler;
+
+	private SimpleXYSeries series;
 
 	private WhistleProcessor whistleProcessor;
 	private WhistleReceiver whistleReceiver;
@@ -53,13 +69,27 @@ public class MainActivity extends Activity implements OnClickListener, Callback 
 		whistleSender = new WhistleSender();
 		whistleSender.start(whistleProducer);
 
-//		FrequencyView view = new FrequencyView(this);
-//		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-//				RelativeLayout.LayoutParams.FILL_PARENT,
-//				RelativeLayout.LayoutParams.MATCH_PARENT);
-//		params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-//		((RelativeLayout) findViewById(R.id.edit_input).getRootView()).addView(
-//				view, params); // LOL HACK!
+		plot = (XYPlot) findViewById(R.id.frequencyPlot);
+		plot.setRangeBoundaries(0, 1, BoundaryMode.FIXED);
+		plot.setRangeStepValue(5);
+		plot.setDomainStepValue(5);
+
+		seriesFormat = new LineAndPointFormatter(Color.RED, Color.GREEN,
+				Color.BLUE, null);
+
+		mainHandler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				if (stop) {
+					return;
+				}
+
+				updateAmplitudes();
+
+				mainHandler.postDelayed(this, BAUD);
+			}
+		}, BAUD);
 	}
 
 	@Override
@@ -71,6 +101,35 @@ public class MainActivity extends Activity implements OnClickListener, Callback 
 				outputEdit.setText(text);
 			}
 		});
+	}
+
+	public void updateAmplitudes() {
+		double[][] amplitudes = whistleReceiver.getData();
+		if (amplitudes == null) {
+			Log.d("Whistle", "amplitude data not ready for graph");
+
+			return;
+		}
+
+		List<Number> xyInterleavedList = new LinkedList<Number>();
+		for (int i = 0; i < amplitudes[0].length; i++) {
+			double x = amplitudes[0][i];
+			double y = amplitudes[1][i];
+
+			xyInterleavedList.add(x);
+			xyInterleavedList.add(y);
+		}
+
+		if (series != null) {
+			plot.removeSeries(series);
+		}
+
+		series = new SimpleXYSeries(xyInterleavedList,
+				SimpleXYSeries.ArrayFormat.XY_VALS_INTERLEAVED, "series");
+
+		plot.addSeries(series, seriesFormat);
+
+		plot.redraw();
 	}
 
 	@Override
@@ -98,9 +157,10 @@ public class MainActivity extends Activity implements OnClickListener, Callback 
 	protected void onStop() {
 		super.onStop();
 
+		stop = true;
+
 		whistleReceiver.stop();
 
 		whistleSender.stop();
 	}
-
 }

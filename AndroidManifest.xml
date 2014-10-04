@@ -5,9 +5,10 @@
     android:versionName="1.0" >
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-sdk
-        android:minSdkVersion="19"
+        android:minSdkVersion="15"
         android:targetSdkVersion="19" />
 
     <application

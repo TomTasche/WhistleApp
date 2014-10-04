@@ -48,8 +48,10 @@ public class PcmAudioRecordReader extends PcmReader {
 
 	@Override
 	public double read() {
-		while (outBufferIndex >= outBuffer.length)
+		while (outBufferIndex >= outBufferSize) {
 			readBuffer();
+		}
+
 		return outBuffer[outBufferIndex++];
 	}
 
