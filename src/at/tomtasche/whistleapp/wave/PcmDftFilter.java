@@ -2,25 +2,35 @@ package at.tomtasche.whistleapp.wave;
 
 public class PcmDftFilter extends PcmFilter {
 
-	private final int sampleRate;
+	private final double sampleTime;
 	private final double bandStart;
-	private final double bandEnd;
+	private final double band;
 	private final double[] buffer;
 	private int bufferIndex;
 	private int bufferSize;
 
 	private final double[][] dftBuffer;
 	private final double[] lastResults;
+	private final double[] frequencies;
+	private final double[][] lastData;
 
 	public PcmDftFilter(int sampleRate, double bandStart, double bandEnd,
 			int resolution) {
-		this.sampleRate = sampleRate;
+		this.sampleTime = 1.0 / sampleRate;
 		this.bandStart = bandStart;
-		this.bandEnd = bandEnd;
+		this.band = bandEnd - bandStart;
 		int bufferSize = (int) (sampleRate * (1 / bandEnd) * 5);
 		this.buffer = new double[bufferSize];
 		this.dftBuffer = new double[bufferSize][2];
 		this.lastResults = new double[resolution];
+
+		this.frequencies = new double[resolution];
+		for (int i = 0; i < resolution; i++) {
+			double frequency = bandStart + band
+					* ((double) i / (lastResults.length - 1));
+			frequencies[i] = frequency;
+		}
+		this.lastData = new double[][] { frequencies, lastResults };
 	}
 
 	@Override
@@ -35,9 +45,6 @@ public class PcmDftFilter extends PcmFilter {
 	}
 
 	private void dft() {
-		double band = bandEnd - bandStart;
-		double sampleTime = 1.0 / sampleRate;
-
 		for (int i = 0; i < lastResults.length; i++) {
 			double frequency = bandStart + band
 					* ((double) i / (lastResults.length - 1));
@@ -55,6 +62,10 @@ public class PcmDftFilter extends PcmFilter {
 					+ dftBuffer[i][1] * dftBuffer[i][1])
 					/ buffer.length;
 		}
+	}
+
+	public double[][] getData() {
+		return lastData;
 	}
 
 }

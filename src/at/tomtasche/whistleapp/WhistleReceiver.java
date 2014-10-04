@@ -1,10 +1,13 @@
 package at.tomtasche.whistleapp;
 
+import java.io.IOException;
+
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder.AudioSource;
-import android.util.Log;
 import at.tomtasche.whistleapp.wave.PcmAudioRecordReader;
+import at.tomtasche.whistleapp.wave.PcmDftFilter;
+import at.tomtasche.whistleapp.wave.PcmFilterReader;
 
 public class WhistleReceiver implements Runnable {
 
@@ -16,6 +19,8 @@ public class WhistleReceiver implements Runnable {
 
 	private Thread thread;
 	private boolean stopped;
+
+	private double[][] data;
 
 	public WhistleReceiver(int sampleRate) {
 		this.sampleRate = sampleRate;
@@ -41,12 +46,17 @@ public class WhistleReceiver implements Runnable {
 		recorder.startRecording();
 
 		PcmAudioRecordReader in = new PcmAudioRecordReader(recorder);
+		PcmDftFilter dft = new PcmDftFilter(sampleRate, 0, 10000, 100);
+		data = dft.getData();
+		PcmFilterReader fin = new PcmFilterReader(in, dft);
 
-		while (true)
-			Log.d("pcm", "" + in.read());
-
-//		recorder.stop();
-//		recorder.release();
+		try {
+			while (true)
+				fin.read();
+		} catch (IOException e) {
+			recorder.stop();
+			recorder.release();
+		}
 	}
 
 	public void stop() {
@@ -54,4 +64,9 @@ public class WhistleReceiver implements Runnable {
 
 		thread.interrupt();
 	}
+
+	public double[][] getData() {
+		return data;
+	}
+
 }

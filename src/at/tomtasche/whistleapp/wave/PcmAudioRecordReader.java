@@ -2,7 +2,6 @@ package at.tomtasche.whistleapp.wave;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
-import android.util.Log;
 import at.stefl.commons.util.InaccessibleSectionException;
 import at.stefl.commons.util.NumberUtil;
 import at.stefl.commons.util.array.ArrayUtil;
@@ -39,7 +38,6 @@ public class PcmAudioRecordReader extends PcmReader {
 	private void readBuffer() {
 		outBufferSize = recorder.read(inBuffer, 0, inBuffer.length)
 				/ sampleSize;
-		System.out.println(outBufferSize);
 		outBufferIndex = 0;
 
 		for (int i = 0, j = 0; i < outBufferSize; i++, j += sampleSize) {
