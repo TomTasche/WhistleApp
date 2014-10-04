@@ -7,5 +7,13 @@ import java.io.IOException;
 public abstract class PcmWriter implements Closeable, Flushable {
 
 	public abstract void write(double pulse) throws IOException;
+	
+	@Override
+	public void flush() throws IOException {
+	}
+	
+	@Override
+	public void close() throws IOException {
+	}
 
 }

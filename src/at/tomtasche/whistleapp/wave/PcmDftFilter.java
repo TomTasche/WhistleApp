@@ -21,7 +21,7 @@ public class PcmDftFilter extends PcmFilter {
 		this.band = bandEnd - bandStart;
 		int bufferSize = (int) (sampleRate * (1 / bandEnd) * 5);
 		this.buffer = new double[bufferSize];
-		this.dftBuffer = new double[bufferSize][2];
+		this.dftBuffer = new double[resolution][2];
 		this.lastResults = new double[resolution];
 
 		this.frequencies = new double[resolution];
