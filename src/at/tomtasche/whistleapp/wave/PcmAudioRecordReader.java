@@ -4,7 +4,6 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import at.stefl.commons.util.InaccessibleSectionException;
 import at.stefl.commons.util.NumberUtil;
-import at.stefl.commons.util.array.ArrayUtil;
 
 public class PcmAudioRecordReader extends PcmReader {
 
@@ -16,6 +15,7 @@ public class PcmAudioRecordReader extends PcmReader {
 	private final double[] outBuffer;
 	private int outBufferIndex;
 	private int outBufferSize;
+	private final byte[] tmpBuffer;
 
 	public PcmAudioRecordReader(AudioRecord recorder) {
 		switch (recorder.getAudioFormat()) {
@@ -33,6 +33,7 @@ public class PcmAudioRecordReader extends PcmReader {
 		this.inBuffer = new byte[BUFFER_SIZE * sampleSize];
 		this.outBuffer = new double[BUFFER_SIZE];
 		this.outBufferIndex = outBuffer.length;
+		this.tmpBuffer = new byte[sampleSize];
 	}
 
 	private void readBuffer() {
@@ -41,8 +42,8 @@ public class PcmAudioRecordReader extends PcmReader {
 		outBufferIndex = 0;
 
 		for (int i = 0, j = 0; i < outBufferSize; i++, j += sampleSize) {
-			byte[] tmp = ArrayUtil.copyOfRange(inBuffer, j, j + sampleSize);
-			outBuffer[i] = NumberUtil.mapIntegerToDouble(tmp);
+			System.arraycopy(inBuffer, j, tmpBuffer, 0, sampleSize);
+			outBuffer[i] = NumberUtil.mapIntegerToDouble(tmpBuffer);
 		}
 	}
 
