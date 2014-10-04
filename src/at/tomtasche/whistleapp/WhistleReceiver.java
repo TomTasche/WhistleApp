@@ -51,7 +51,7 @@ public class WhistleReceiver implements Runnable {
 		recorder.startRecording();
 
 		PcmAudioRecordReader in = new PcmAudioRecordReader(recorder);
-		PcmDftFilter dft = new PcmDftFilter(sampleRate, 0, 10000, 100);
+		PcmDftFilter dft = new PcmDftFilter(sampleRate, 0, 10000, 10);
 		data = dft.getData();
 		PcmFilterReader fin = new PcmFilterReader(in, dft);
 
@@ -64,6 +64,7 @@ public class WhistleReceiver implements Runnable {
 					(short) 16));
 
 			PcmWriter writer = waveFile.getAppendWriter();
+
 			while (!stopped) {
 				double read = fin.read();
 				writer.write(read);

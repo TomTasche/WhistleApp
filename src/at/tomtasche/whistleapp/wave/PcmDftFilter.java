@@ -37,11 +37,13 @@ public class PcmDftFilter extends PcmFilter {
 	public double filter(double pulse) {
 		buffer[bufferIndex] = pulse;
 		bufferIndex = (++bufferIndex) % buffer.length;
-		if (bufferSize < buffer.length)
+		if (bufferSize < buffer.length) {
 			bufferSize++;
-		else
+		} else {
 			dft();
-		return 0;
+		}
+
+		return pulse;
 	}
 
 	private void dft() {

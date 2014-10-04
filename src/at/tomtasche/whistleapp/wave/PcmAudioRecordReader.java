@@ -8,7 +8,7 @@ import at.stefl.commons.util.array.ArrayUtil;
 
 public class PcmAudioRecordReader extends PcmReader {
 
-	private static final int BUFFER_SIZE = 1;
+	private static final int BUFFER_SIZE = 100;
 
 	private final AudioRecord recorder;
 	private final int sampleSize;
