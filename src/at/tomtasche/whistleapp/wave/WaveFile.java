@@ -78,7 +78,6 @@ public class WaveFile {
 	public PcmReader getReader() throws IOException {
 		InputStream in = new FileInputStream(file);
 		WaveHeader result = WaveHeader.read(in);
-		in.close();
 		return new PcmInputStreamReader(in, result.getBitsPerSample(),
 				WaveConstants.DATA_ENDIAN);
 	}

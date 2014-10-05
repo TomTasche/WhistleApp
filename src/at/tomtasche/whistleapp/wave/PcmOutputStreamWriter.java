@@ -27,7 +27,7 @@ public class PcmOutputStreamWriter extends PcmWriter {
 		NumberUtil.mapDoubleToInteger(pulse, buffer, 0, buffer.length);
 
 		if (endian == Endianness.LITTLE) {
-			ArrayUtil.swapAll(buffer);
+			ArrayUtil.turn(buffer);
 		}
 
 		out.write(buffer);

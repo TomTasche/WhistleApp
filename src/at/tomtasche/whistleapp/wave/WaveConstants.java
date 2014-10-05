@@ -11,7 +11,7 @@ public class WaveConstants {
 	public static final short AUDIO_FORMAT = 1;
 	public static final int SUBCHUNK_2_ID = 0x64617461; // "data"
 	public static final int HEADER_SIZE = 44;
-	public static final Endianness DATA_ENDIAN = Endianness.LITTLE;
+	public static final Endianness DATA_ENDIAN = Endianness.BIG;
 
 	private WaveConstants() {
 	}

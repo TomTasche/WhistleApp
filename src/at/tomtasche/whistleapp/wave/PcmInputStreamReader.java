@@ -25,10 +25,13 @@ public class PcmInputStreamReader extends PcmReader {
 	}
 
 	public double read() throws IOException {
-		ByteStreamUtil.readFully(in, buffer);
+		int read = ByteStreamUtil.readTireless(in, buffer);
+		if (read == -1) {
+			return Double.NaN;
+		}
 
 		if (endian == Endianness.LITTLE) {
-			ArrayUtil.swapAll(buffer);
+			ArrayUtil.turn(buffer);
 		}
 
 		return NumberUtil.mapIntegerToDouble(buffer);

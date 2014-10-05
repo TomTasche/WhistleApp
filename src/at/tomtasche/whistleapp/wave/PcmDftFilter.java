@@ -1,8 +1,5 @@
 package at.tomtasche.whistleapp.wave;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-
 public class PcmDftFilter extends PcmFilter {
 
 	private final double sampleTime;
@@ -17,17 +14,12 @@ public class PcmDftFilter extends PcmFilter {
 	private final double[] frequencies;
 	private final double[][] lastData;
 
-	private HandlerThread handlerThread;
-
-	private Handler handler;
-
 	public PcmDftFilter(int sampleRate, double bandStart, double bandEnd,
 			int resolution) {
 		this.sampleTime = 1.0 / sampleRate;
 		this.bandStart = bandStart;
 		this.band = bandEnd - bandStart;
 		int bufferSize = (int) (sampleRate * (1 / bandEnd) * 5);
-		bufferSize = 1000;
 		this.buffer = new double[bufferSize];
 		this.dftBuffer = new double[resolution][2];
 		this.lastResults = new double[resolution];
@@ -39,32 +31,17 @@ public class PcmDftFilter extends PcmFilter {
 			frequencies[i] = frequency;
 		}
 		this.lastData = new double[][] { frequencies, lastResults };
-
-		handlerThread = new HandlerThread("blagax");
-		handlerThread.start();
-
-		handler = new Handler(handlerThread.getLooper());
-
-		handler.postDelayed(new Runnable() {
-
-			@Override
-			public void run() {
-				dft();
-
-				handler.postDelayed(this, 100);
-			}
-		}, 100);
 	}
 
 	@Override
 	public double filter(double pulse) {
 		buffer[bufferIndex] = pulse;
 		bufferIndex = (++bufferIndex) % buffer.length;
-		if (bufferSize < buffer.length) {
+		if (bufferSize < buffer.length)
 			bufferSize++;
-		}
-
-		return pulse;
+		else
+			dft();
+		return 0;
 	}
 
 	private void dft() {
